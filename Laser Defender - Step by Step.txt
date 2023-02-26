@@ -1,0 +1,88 @@
+Tip:
+If accidentally creating a 3D project:
+	- Change camera to orthographic
+	- Camera -> Clear flags: From Skybox to Solid Colour
+	- In the Scene toolbar, to the right of Audio: "Toggle Skybox, fog and various effects"
+	- Package Manager, install:
+		- 2D Sprite
+		- Input system
+		- TextMeshPro
+		
+Customizing dockable pane layout:
+- arrange panes as wanted
+- In the layout droplist at the far top-right: Save etc.
+- In the Game view: Create 9:16 (aspect ratio)
+
+
+- Download asset pack from kenney.nl: Space Shooter Redux
+- Copy into assets folder
+- Note: If starting with a 3D project, Texture Type must be changed from "Default" to "Sprite (2D and UI)" for all images
+
+Create "Player" game object
+	- Choose a player ship from asset pack and drag it on to the player object
+	- Create prefabs folder
+	- Prefab player
+Create "enemy" game object
+	- Choose a player ship from asset pack and drag it on to the player object
+	- Choose an enemy ship from asset pack and drag it on to the game object
+	- Prefab enemy
+	
+- The game objects look too big on in the game view
+	=> Increase Camera size. 9 looks OK.
+	
+Set up background
+	- Download starfield from course
+	- Put in assets pack
+	- Create new game object: Background
+	- Drag background sprite onto object
+	- To make sure game objects visible: On starfield sprite, set Order in Layer: -1
+	
+Unity Input System:
+	- Add component on Player: Player Input
+	- Click "Create Actions" (name it InputActions)
+	- Double-click the asset to see its settings
+	- Drag the input actions asset to the Player Input component
+	- On Player Input component: Click "Open Input Settings" -> Click Create Settings Asset
+	- Create Player script
+		- Using UnityEngine.InputSystem
+		- Implement OnMove(InputValue value)  -> value.Get<Vector2>()
+		- Make movement frame-rate independent, use Time.deltaTime (deltaTime is the time it took to render the last frame)
+			Vector3 delta = m_rawInput * m_moveSpeed * Time.deltaTime
+		
+Confine player to screen boundaries:
+	- ViewPortToWorldPoint: Converts a normalized position on the screen to a 3D pos in world space
+	- Normalized screen coords: Lower-left corresponds to (0,0), upper right to (1,1)
+	
+Enemies:
+	- WaveConfig file:
+		- Which enemies are spawned
+		- The path to follow
+		- Time between enemy spawns
+	- Create empty game object: Path 0
+		- Create child game object: Waypoint (0)
+		- Select an icon for the Waypoint in order to see it, at the top left in the inspector
+		- Duplicate 4 times
+		- Update coordinates of the 5 objects to create a path
+		- Prefab into Waves and Paths folder
+		- Create script: WaveConfigSO. Derives from ScriptableObject
+		- In order to create from Unity:
+			[CreateAssetMenu(menuName = "Wave Config", fileName = "New Wave Config")]
+		- Implemenmt path getters
+	- New script: Pathfinder. Attach to Enemy prefab	
+		 Set enemy to first waypoint and iteratively move it
+		- Use Vector2.MoveTowards to move towards the next waypoint in the list
+		- In Waves and Paths folder, create a new Wave config (Wave 0) via popup (under Create)
+		- Attach Path 0 prefab to its path prefab field
+		- On enemy prefab, attach the new wave config to it
+	- Instantiate enemies into the scene:
+		- WaveConfigSO: Maintain list of enemies in a list + create getters
+		- New script, EnemySpawner. Instatiates enemies kept in WaveConfigSO.
+		- Refactor Pathfinder script to fetch WaveConfigSO from enemySpawner instead of maintaining via SerializeField
+		- Create EnemySpawner game object
+			- Add EnemySpawner script
+			- Connect Wave 0 to it
+		- Select Wave 0
+		- Drag enemy 0 prefab over to its "Enemy prefabs" list
+		- Delete enemies from scene, will be generated runtime	
+		- Nesting instatiated enemies inside enemySpawner:
+			Add this.transform param to Instantiate() method
