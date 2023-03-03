@@ -178,3 +178,41 @@ Enemy Shooting:
 	
 Particle Effects:
 	- In hierarchy: Effects -> Particle System
+	- Create material in assets folder: m_explosion.
+		- Change Shader: Particles -> Standard Unlit
+		- Rendering Mode: Additive
+		- Drag explosion PNG next to "Albedo" within Maps
+	- Particle System -> Renderer: Drag our material into the material slot
+	- Want to loop through each image within the sprite sheet:
+		- Check Texture Sheet Animation
+		- Tiles: 3, 1 (Sprite sheet is 3 by 1)
+		- Cycles: 2 (i.e. loop through twice)
+		- Start Frame: Random between two constants: 0, 2
+	- Select and tick "Color over lifetime":
+		- Select Color
+			- Top: Alpha 
+			- Bottom: Color 
+			- Click anywhere to set up a new transition during the lifetime
+	- Select Shape:
+		- Change to Circle
+		- Initially, it appears flat because it's in 3D => Reset particle system rotation
+		- Also reset pos and scale
+	- Constrain explosion:
+		- Start lifetime: Random between two constants: 0.1 - 0.5
+		- Start rotation: Random between two constants: 0 - 359
+		- Rotation over lifetime: Angular velocity: 180 (rotation while travelling)
+	- Emission -> Rate over time: 100
+	- Shape -> Radius: 0.5
+	- Size over lifetime: Flip default curve, so that particles start big and then decrease
+	- Start Speed: 
+		- Random between two constants: 0 - 2
+		- Not optimal => Select Curve: Start at 0, end at 2: Several particles created with start speed 2 and gradually fewer towards 0
+	- Switch off looping
+	- Decrease Duration to 0.2
+	- Prefab it as ExplosionEffect
+	- In Health script:
+		- [SerializeField] ParticleSystem m_hitEffect;
+		- Introduce PlayHitEffect()
+	- Particle effect is below the player/enemy => Change order in layer to 2 in "Renderer"
+		
+Screen Shake:
