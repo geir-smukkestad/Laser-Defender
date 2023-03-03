@@ -86,3 +86,95 @@ Enemies:
 		- Delete enemies from scene, will be generated runtime	
 		- Nesting instatiated enemies inside enemySpawner:
 			Add this.transform param to Instantiate() method
+	- Make enemies spawn at diffent intervals:
+		- WaveConfigSO.GetRandomSpawnTime:
+			Random.Range(m_timeBetweenEnemySpawns - m_spawnTimeVariance,
+			m_timeBetweenEnemySpawns + m_spawnTimeVariance);
+		  return Mathf.Clamp(spawnTime, m_minimumSpawnTime, float.MaxValue);
+		- EnemySpawner.SpawnEnemies: Make this function a coroutine
+			for (int i = 0; i < m_currentWave.GetEnemyCount(); i++)
+			{
+				Instantiate(m_currentWave.GetEnemyPrefab(i), m_currentWave.GetStartingWaypoint().position, Quaternion.identity, transform);
+				yield return new WaitForSeconds(m_currentWave.GetRandomSpawnTime());
+			}
+	- Several enemy waves:
+		- EnemySpawner: List of WaveConfigSO
+		- EnemySpawner.SpawnEnemies: Loop through each wave and that wave's enemies
+		- Select EnemySpawner: Drag Wave 0 and Wave 1 into the list in the inspector
+		- Set up Wave 1
+
+Taking damage:
+	- Select both enemy and player prefabs:
+		- Add RigidBody2D
+		- Body Type -> Kinematic (because objects are moved via code instead of the physics system)
+		- Add Circle Collider 2D
+		- Edit circle collider on both objects
+		- Set trigger
+		- Create new script: Health, attach to both enemy and player
+		- Create new script: DamageDealer
+		- DamageDealer: Hold the amount of damage attached object can dockable
+		- Health: The amount of healt the attached object has
+		- Enemy: Add DamageDealer
+		
+Projectile setup:
+	- Create empty game object: Projectile
+	- Locate a laser PNG and drag it below the Projectile object
+	- Scale it to (2,2,2)
+	- Add RigidBody2D. Type: Kinematic
+	- Add CapsuleCollider2D. Edit collider. (Press ALT while dragging to move both sides of collider)
+	- CapsuleCollider2D: Is Trigger
+	- Add DamageDealer
+	- Rename: Projectile_Player
+	- Duplicate it => Projectile_Enemy
+	- Projectile_Enemy: Change sprite, red laser
+	- Problem: Projectile_Player can hit and damage player
+		- Set up two new layers: Player and Enemy
+		- Enemy and Projectile_Enemy: Set Enemy layer
+		- Player and Projectile_Player: Set Player layer
+		- Project Settings -> Physics 2D -> Layer Collision Matrix
+	- Projectiles should appear under ships => Order in Layer: 0
+		Player and Enemy: Order in Layer: 1
+	- Double-click Input System in project
+		- Add new key for firing: Space
+		- Click '+' on the fire actions -> Add Binding. This adds a blank binding
+			- Click "path" -> Listen -> Press SpaceBar
+			- Tick use in control scheme "Keyboard & Mouse"
+		- Select Fire action.
+			- Change Action Type from Button to Value. Control Type -> Any.
+			- This is needed to know when to start firing (keydown) and stop (keyup)			
+		- Click "Save Asset"
+		
+Player Shooting:
+	- Player script: OnFire input notification
+	- Player: Add Shooter script
+		- GameObject projectilePrefab
+	- Get reference to Shooter in Player script via GetComponent<Shooter>
+	- Player.OnFire
+	        if (m_shooter)
+				m_shooter.m_isFiring = value.isPressed;
+	- Shooter:
+		Fire:
+			StartCoroutine(FireContinuously());
+		
+		IEnumerator FireContinuously()
+			GameObject projectile = Instantiate(m_projectilePrefab, transform.position, Quaternion.identity);
+            Rigidbody2D rigidBody = projectile.GetComponent<Rigidbody2D>();
+            if (rigidBody != null)
+                rigidBody.velocity = transform.up * m_projectileSpeed;
+Enemy Shooting:
+	- Enemy prefab: Add Shooter script. Attach enemy projectile
+	- Should always fire => In Shooter script:
+		[SerializeField] bool m_useAI = false;
+	- Initially, enemy shoots downwards => Rotate sprite 180 degrees, so that up-vector points down
+	- EnemySpawner: Rotate 180 degrees when instantiating:
+		Instantiate(m_currentWave.GetEnemyPrefab(i), m_currentWave.GetStartingWaypoint().position, Quaternion.Euler(0, 0, 180), transform);
+	- Random time between shots:
+            float timeToNextProjectile = Random.Range(m_firingRate - m_firingRateVariance, m_firingRate + m_firingRateVariance);
+            Mathf.Clamp(timeToNextProjectile, m_minimumFiringRate, float.MaxValue);
+	- Group serialized fields in a script:
+		[Header("General")]
+	- Hide public members:
+		[HideInInspector]
+	
+Particle Effects:
+	- In hierarchy: Effects -> Particle System
