@@ -113,7 +113,7 @@ Taking damage:
 		- Create new script: Health, attach to both enemy and player
 		- Create new script: DamageDealer
 		- DamageDealer: Hold the amount of damage attached object can dockable
-		- Health: The amount of healt the attached object has
+		- Health: The amount of health the attached object has
 		- Enemy: Add DamageDealer
 		
 Projectile setup:
@@ -216,3 +216,18 @@ Particle Effects:
 	- Particle effect is below the player/enemy => Change order in layer to 2 in "Renderer"
 		
 Screen Shake:
+	- New script: CameraShake
+	- Shake coroutine:
+        while (elapsedTime < m_shakeDuration)
+        {
+            transform.position = m_initialPosition + (Vector3)Random.insideUnitCircle * m_shakeMagnitude;
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }	
+	- Call it from the health script:
+		Awake:
+			m_cameraShake = Camera.main.GetComponent<CameraShake>();
+		ShakeCamera:
+			m_cameraShake.Play();
+	- Tick "apply camera shake" on Player prefab
+	- Reduce screen shake parameters on Camera: 0.5 duration, magnitude: 0.25

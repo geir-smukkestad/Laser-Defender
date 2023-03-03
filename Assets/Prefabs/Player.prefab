@@ -136,6 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_health: 50
   m_hitEffect: {fileID: 1665771514495456795, guid: b169ff649fec8ff43b57a7fe51b0914d, type: 3}
+  m_applCameraShake: 1
 --- !u!114 &4307842081295249823
 MonoBehaviour:
   m_ObjectHideFlags: 0
