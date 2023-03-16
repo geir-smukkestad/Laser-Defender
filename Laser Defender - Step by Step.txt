@@ -1,3 +1,10 @@
+Web resources:
+-------------
+- kenney.nl
+- OpenGameArt.org
+
+-----
+-----
 Tip:
 If accidentally creating a 3D project:
 	- Change camera to orthographic
@@ -231,3 +238,35 @@ Screen Shake:
 			m_cameraShake.Play();
 	- Tick "apply camera shake" on Player prefab
 	- Reduce screen shake parameters on Camera: 0.5 duration, magnitude: 0.25
+	
+Scrolling Background:
+	- Import 2 PNGs (Stars_0 and Stars_1) to be layered on top of each other
+	- Drag both on to the background node
+	- Update order in layer to ensure no visibility issues:
+		- Stars_0 -> -2
+		- Stars_1 -> -1
+	- In assets folder, create new material: Background
+	- Change Shader: Unlit -> Transparent
+	- Drag this material onto both Stars_0 and Stars_1
+	- Select both Stars_0 and Stars_1: Change texture wrap mode: Repeat + Apply
+	- Create new script, SpriteScroller
+	- Add script to Stars_0 and Stars_1 sprites
+		- [SerializeField] Vector2 m_moveSpeed;
+		- Update():
+			m_offset = m_moveSpeed * Time.deltaTime;
+			m_material.mainTextureOffset += m_offset;
+	
+Sound Effects:
+	- Download from kenney.nl: Assets -> Audio -> Sci-fi sounds
+	- Create AudioPlayer game object
+	- Create new script, AudioPlayer, and attach to the game object
+		- Range can be used to constrain a value:
+			[SerializeField] [Range(0,1f)] float m_shootingVolume = 1f;
+	- Shooter: Grab reference to AudioPlayer and call PlayShootingClip() when firing
+	
+Background music:
+	- OpenGameArt.org
+	- AudioListener, AudioSource, AudioFile 
+	- On AudioPlayer game object: Add AudioSource component
+		- Add music clip from OpenGameArt to AudioSource (AudioClip)
+		- Tick "play on awake" and "loop"
