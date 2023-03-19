@@ -270,3 +270,16 @@ Background music:
 	- On AudioPlayer game object: Add AudioSource component
 		- Add music clip from OpenGameArt to AudioSource (AudioClip)
 		- Tick "play on awake" and "loop"
+		
+Keeping Score:
+	- Add ScoreKeeper game object and corresponding script
+	- ScoreKeeper script:
+		- holds score
+		- public setter and getter
+	- Health script:
+		- Get ScoreKeeper ref
+		- bool to differentiate whether health script is attached to player or enemy
+		- When the game object is destroyed: Add score if it's attached to an enemy
+		
+UI:
+	- Add canvas: UI -> Canvas

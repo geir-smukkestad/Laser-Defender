@@ -4,29 +4,38 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    [SerializeField] bool m_isPlayer = false;
     [SerializeField] int m_health = 50;
+    [SerializeField] int m_score = 50;
     [SerializeField] ParticleSystem m_hitEffect;
 
     [SerializeField] bool m_applCameraShake = false;
     CameraShake m_cameraShake;
     AudioPlayer m_audioPlayer;
+    ScoreKeeper m_scoreKeeper;
 
     void Awake()
     {
         m_cameraShake = Camera.main.GetComponent<CameraShake>();
         m_audioPlayer = FindObjectOfType<AudioPlayer>();
+        m_scoreKeeper = FindObjectOfType<ScoreKeeper>();
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        DamageDealer damagerDealer = other.GetComponent<DamageDealer>();
-        if (damagerDealer != null)
+        DamageDealer damageDealer = other.GetComponent<DamageDealer>();
+        if (damageDealer != null)
         {
-            TakeDamage(damagerDealer.GetDamage());
+            TakeDamage(damageDealer.GetDamage());
             PlayHitEffect();
             ShakeCamera();
-            damagerDealer.Hit();
+            damageDealer.Hit();
         }
+    }
+
+    public int GetHealth()
+    {
+        return m_health;
     }
 
     void TakeDamage(int damage)
@@ -34,7 +43,14 @@ public class Health : MonoBehaviour
         m_health -= damage;
         m_audioPlayer.PlayDamageClip();
         if (m_health <= 0)
-            Destroy(gameObject);
+            Die();
+    }
+
+    void Die()
+    {
+        if (!m_isPlayer)
+            m_scoreKeeper.AddScore(m_score);
+        Destroy(gameObject);
     }
 
     void PlayHitEffect()
