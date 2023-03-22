@@ -281,5 +281,58 @@ Keeping Score:
 		- bool to differentiate whether health script is attached to player or enemy
 		- When the game object is destroyed: Add score if it's attached to an enemy
 		
-UI:
+UI - controls:
 	- Add canvas: UI -> Canvas
+	- Click on EventSystem node, see a warning: Click "replace with InputSystemUIInputModule"
+	- Select Canvas:
+		- Canvas Scaler: Change to "Scale with screen size"	
+		- Change reference resolution: 1080 z 1920
+	- Add panel: Right-click on canvas: UI -> Panel
+		- Choose suitable colour for the panel
+	- Change vertical anchor by grabbing handle. Set to values: Anchors max: 1, 0.07
+	- Change Top coordinate to 0.
+	- Add health slider to panel: UI -> Slider
+		- Resize to fit left part of bar (adjust anchors)
+		- Switch off "interactable"
+		- Transition: None
+		- Select sub-node: Handle Slide Area: Deactivate
+		- Choose colours for slider background and fill area sub-nodes
+	- Add score text: UI -> TextMeshPro
+		- Align right by adjusting anchors
+		- Font size:
+			- Tick "Auto size"
+			- Min-max: 5, 72
+		- Alignment: Right, middle
+	- Download font (e.g. from dafont.com)
+		- Create Fonts folder in assets
+		- Drag downloaded font into it
+		- Window -> TextMeshPro -> Font Asset Creator
+		- Drag font asset into "Source font file"
+		- Click generate font atlas
+		- Click Save (into fonts asset folder) and exit dialog
+		- Select text
+		- Drag created font asset into Font Asset
+		- Outline effect:
+			- Leave vertex colour unchanged
+			- Scroll down to "Extra Settings"
+			- Choose "Face Colour", low opacity
+			- Choose "Outline colour", similar to face colour, full opacity
+			- Set glow, same colour as above. Increase "inner"
+		
+UI - behaviour
+	- Canvas: Add UiDisplay script
+	- In the script, remember:
+		- using UnityEngine.UI;
+		- using TMPro;
+	- Slider and text:
+		[SerializeField] Slider m_slider;
+		[SerializeField] TextMeshProUGUI m_scoreText;
+	- Get health script from player object:
+        Player player = FindObjectOfType<Player>();
+        m_health = player.GetComponent<Health>();	
+	-  m_slider.minValue = 0;
+       m_slider.maxValue = m_health.GetHealth();s
+	- Pad score with leading zeros:
+		
+Adding scenes:
+	- 
