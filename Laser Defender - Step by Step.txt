@@ -335,4 +335,38 @@ UI - behaviour
 	- Pad score with leading zeros:
 		
 Adding scenes:
-	- 
+	- Rename existing scene to Game
+	- Prefab Background, AudioPlayer and ScoreKeeper
+	- Scenes folder: Right-click -> Create -> Scene ->MainMenu
+	- Open MainMenu scene by double-clicking it
+	- Instantiate Background and AudioPlayer
+	- Add canvas
+		- Click on the newly created EventSystem node -> Click Replace with InputSystemUIInputModule
+		(- As an example: On Canvas: Add button: Button TextMeshPro 
+			- Image component has a colour
+			- There are several colours in the Button component.
+				- Image component Colour will take presedence if Normal Colour is white.
+				  Choosing another Normal colour will blend with image colour
+				- Others: Highlighted, pressed, selected, disabled
+			- Delete button)
+			
+	- On Background, reduce move speed
+	- Canvas: "Canvas Scaler", "Scale with screen size"
+	- Duplicate font asset, "Menu Font"
+		- Check "color gradient",
+		- Check "Horizontal gradient", choose colours
+		- Add "underlay" for 3D effect
+		- Add glow
+	- Create button
+		- Set text -> Play
+		- Set transparency on Image -> Color
+		- "Button" component: Set normal, highlighted, selected colors
+		- Duplicate button		
+	- On Canvas, create empty ButtonGroup object
+		- On ButtonGroup, add "Vertical Layout Group"
+			- Move buttons within group
+			- Set Spacing 
+			- Check "Control Child Size", width and height
+	- In scenes folder, duplicate MainMenu into GameOver scene
+	
+Level Manager
