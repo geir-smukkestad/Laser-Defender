@@ -1,3 +1,11 @@
+Intellisense not working?
+	- Edit -> Preferences -> External Tools
+		- Editor: Visual Studio Code
+		- Tick Embedded packages
+		- Tick Local packages
+		- Click "Regenerate project files"
+
+
 Web resources:
 -------------
 - kenney.nl
@@ -369,4 +377,81 @@ Adding scenes:
 			- Check "Control Child Size", width and height
 	- In scenes folder, duplicate MainMenu into GameOver scene
 	
-Level Manager
+Level Manager:
+	- File -> Build Settings: Scenes in Build
+		- Only contains the start scene (Game). Build index is shown on the right
+		- Drag the other scenes into the list
+		- Drag MainMenu to the top
+	- In MainMenu scene, create empty game object: LevelManager
+	- Create LevelManager script
+		- using UnityEngine.SceneManagement;
+	- Prefab LevelManager
+	- Start Button: Add OnClick event
+		- Drag LevelManager to the event's object
+		- Choose LevelManager -> LoadGame
+	- Quit button: Add OnClick event
+	
+	- Switch to Game scene
+	- Instantiate LevelManager
+	- Health script:
+		- Get ref to LevelManager
+		- Load game over scene in Die method
+		
+	- Switch to GameOver scene
+	- Instantiate LevelManager
+		- Add Play button onclick event
+		- Add Main Menu button onclick event
+		
+	- LevelManager: Delay loading of game over scene:
+		IEnumerator WaitAndLoad(string sceneName, float delay)
+		{
+			yield return new WaitForSeconds(delay);
+			SceneManager.LoadScene(sceneName);
+		}
+		
+Play audio continuously via singleton:
+	- AudioPlayer script. First version, not globally available:
+		- Awake: ManageSingleton
+		
+		void ManageSingleton()
+		{
+			int instanceCount = FindObjectsOfType(GetType()).Length;
+			if (instanceCount > 1)
+			{
+				gameObject.SetActive(false);
+				Destroy(gameObject);
+			}
+			else
+				DontDestroyOnLoad(gameObject);
+		}		
+		
+	- Second version, via Singleton:
+	
+		static AudioPlayer s_instance;
+		
+        if (s_instance != null)
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+        }
+        else
+        {
+            s_instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+		
+Transfer score from Game to GameOver scene:
+	- In GameOver: New script, UIGameOver. Add to Canvas
+		- Fetch ScoreKeeper and set score from it
+	- Make ScoreKeeper a singleton, same approach as for AudioPlayer
+	- Reset score when starting new game from GameOver scene:
+		- LevelManager: Fetch ScoreKeeper and call ResetScore() in LoadGame()
+	- Instantiate ScoreKeeper in MainMenu scene
+	
+Build game for various platforms:
+	- File -> Build settings
+	- WebGL:
+		- Player -> Resolution and presentation: Set canvas resolution
+		- Player -> Publishing Settings: Compression format: Disabled
+	- ShareMyGame.com
+	

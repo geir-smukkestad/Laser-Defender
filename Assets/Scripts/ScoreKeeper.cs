@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,26 @@ using UnityEngine;
 public class ScoreKeeper : MonoBehaviour
 {    
     int m_score;
+    static ScoreKeeper s_instance;
+
+    void Awake()
+    {
+        ManageSingleton();
+    }
+
+    void ManageSingleton()
+    {
+        if (s_instance == null)
+        {
+            s_instance = this;
+            DontDestroyOnLoad(s_instance);
+        }
+        else
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+        }
+    }
 
     public int GetScore()
     {
